@@ -1,5 +1,5 @@
-body {
-    font-family: Arial, sans-serif;
+body{
+    font-family: Arial, Helvetica, sans-serif;
     height: 100vh;
     margin: 0;
     background-color: #f0f0f0;
@@ -8,7 +8,8 @@ body {
     justify-content: center;
     align-items: center;
 }
-.container {
+
+.container{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -26,43 +27,48 @@ form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid #007bff6e;
+    border: 1px solid #007bff;
     border-radius: 5px;
     width: 100%;
 }
-input {
+input{
     margin: 10px 0;
     padding: 8px;
     width: 80%;
 }
-input[type="submit"] {
+input[type="submit"]{
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
-
-.mensaje {
+.mensaje{
     padding: 10px;
     margin-bottom: 15px;
     border-radius: 5px;
 }
-.info { background-color: #e7f3fe; border: 1px solid #b6d4fe; }
-.error { background-color: #f8d7da; border: 1px solid #f5c2c7; }
-.success { background-color: #d1e7dd; border: 1px solid #badbcc; }
-
-
+.info{
+    background-color: #e7f3fe;
+    border: 1px solid #714fb6;
+}
+.error{
+    background-color: #feeae7;
+    border: 1px solid #83291b;
+}
+.success{
+    background-color: #e7fef6;
+    border: 1px solid #2d6f51;
+}
 
 /* Modal */
 
-.abrir-modal-registro, 
+.abrir-modal-registro,
 .abrir-modal-recuperar{
     cursor: pointer;
     color: #007bff;
 }
-
-.modal {
+.modal{
     display: none;
     position: fixed;
     z-index: 1;
@@ -75,31 +81,27 @@ input[type="submit"] {
     align-items: center;
     justify-content: center;
 }
-
-.modal-contenido {
+.modal-contenido{
     background-color: #fefefe;
     padding: 2rem;
     border: 1px solid #888;
     width: 80%;
     max-width: 600px;
     border-radius: 5px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     margin: 0 auto;
 }
-
 .modal-contenido h2{
     text-align: center;
 }
-
-.modal-contenido span {
+.modal-contenido span{
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
 }
-
 .modal-contenido span:hover,
-.modal-contenido span:focus {
+.modal-contenido span:focus{
     color: black;
     text-decoration: none;
     cursor: pointer;

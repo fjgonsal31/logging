@@ -6,20 +6,18 @@ include_once '../data/usuariobd.php';
 
 $usuariobd = new UsuarioBD();
 
-
-function redirigirConMensaje($url, $success, $message) {
-    // Almacena el resultado en la sesión
+function redirigirConMensaje($url, $success, $mensaje){
+    //almacena el resultado en la sesion
     $_SESSION['success'] = $success;
-    $_SESSION['message'] = $message;
+    $_SESSION['message'] = $mensaje;
 
-    // Realiza la redirección
+    //realiza la redirección
     header("Location: $url");
     exit();
 }
 
-
-// Registro de usuario
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['registro'])) {
+//registro usuario
+if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['registro'])){
     $email = $_POST['email'];
     $password = $_POST['password'];
 
@@ -28,24 +26,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['registro'])) {
     redirigirConMensaje('../index.php', $resultado['success'], $resultado['message']);
 }
 
-// Inicio de sesión
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
+//Inicio de sesión
+if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['login'])){
     $email = $_POST['email'];
     $password = $_POST['password'];
-    
+
     $resultado = $usuariobd->inicioSesion($email, $password);
 
-    if($resultado['success']){
+    if($resultado['success'] == "success"){
         $_SESSION['user_id'] = $resultado['id'];
     }
-    redirigirConMensaje('../index.php',  $resultado['success'], $resultado['message']);
+    redirigirConMensaje('../index.php', $resultado['success'], $resultado['message']);
 }
 
-//recuperación de contraseña
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['recuperar'])) {
+//Recuperación de contraseña
+if($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['recuperar'])){
     $email = $_POST['email'];
 
     $resultado = $usuariobd->recuperarPassword($email);
-    
-    redirigirConMensaje('../index.php',  $resultado['success'], $resultado['message']);
+    redirigirConMensaje('../index.php', $resultado['success'], $resultado['message']);
 }
