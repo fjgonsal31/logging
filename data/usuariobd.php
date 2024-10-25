@@ -1,9 +1,10 @@
 <?php
 include_once 'config.php';
+include_once 'enviarCorreos.php';
 
 class UsuarioBD{
     private $conn;
-    private $url = 'http://localhost/09-login/';
+    private $url = 'https://fjgonsal31.com/logging/';
 
     public function __construct()
     {
@@ -36,16 +37,27 @@ class UsuarioBD{
         $password = password_hash($password, PASSWORD_DEFAULT);
         $token = $this->generarToken();
 
+        //comprobar si el email existe
+        $existe = $this->existeEmail($email);
+
         $sql = "INSERT INTO usuarios (email, password, token, verificado) VALUES(?,?,?,?)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("sssi", $email, $password, $token, $verificado);
 
-        if($stmt->execute()){
-            $mensaje = "Por favor, verifica tu cuenta haciendo clic en este enlace: $this->url/verificar.php?token=$token";
-            return $this->enviarCorreoSimulado($email, "Verificación de cuenta", $mensaje);
+        if(!$existe){
+            if($stmt->execute()){
+                // correcto
+                $mensaje = "Por favor, verifica tu cuenta haciendo clic en este enlace: $this->url/verificar.php?token=$token";
+                $mensaje = Correo::enviarCorreo($email, "Cliente", "Verificación de cuenta", $mensaje);
+                // $mensaje = $this->enviarCorreoSimulado($email, "Verificación de cuenta", $mensaje);
+            }else{
+                $mensaje = ["success" => false, "message" => "Error en el registro: " . $stmt->error];
+            }
         }else{
-            return ["success" => false, "message" => "Error en el registro: " . $stmt->error];
+            $mensaje = ["success" => false, "message" => "Ya existe una cuenta con ese email"];
         }
+
+        return $mensaje;
     }
 
     public function verificarToken($token){
@@ -77,6 +89,8 @@ class UsuarioBD{
         return $resultado;
     }
 
+
+
     public function inicioSesion($email, $password){
         $sql = "SELECT id, email, password, verificado FROM usuarios WHERE email = ?";
         $stmt = $this->conn->prepare($sql);
@@ -101,7 +115,7 @@ class UsuarioBD{
         return $resultado;
     }
 
-    public function recuperarPassword($email){
+    public function existeEmail($email){
         //verificamos si existe el correo en la bbdd
         $check_sql = "SELECT id FROM usuarios WHERE email = ?";
         $check_stmt = $this->conn->prepare($check_sql);
@@ -110,10 +124,17 @@ class UsuarioBD{
 
         $result = $check_stmt->get_result();
 
+        return $result->num_rows > 0;
+    }
+
+    public function recuperarPassword($email){
+
+        $existe = $this->existeEmail($email);
+
         $resultado = ["success" => 'info', "message" => "El correo electrónico  proporcionado no corresponde a ningún usuario registrado."];
 
         //si el correo existe en la bbdd
-        if($result->num_rows > 0){
+        if($existe){
             $token = $this->generarToken();
 
             $sql = "UPDATE usuarios SET token_recuperacion = ? WHERE email = ?";
@@ -123,7 +144,8 @@ class UsuarioBD{
             //ejecuta la consulta
             if($stmt->execute()){
                 $mensaje = "Para restablecer tu contraseña, haz click en este enlace: $this->url/restablecer.php?token=$token";
-                $this->enviarCorreoSimulado($email, "Recuperación de contraseña", $mensaje);
+                $mensaje = Correo::enviarCorreo($email, "Cliente", "Restablecer Contraseña", $mensaje);
+                // $this->enviarCorreoSimulado($email, "Recuperación de contraseña", $mensaje);
                 $resultado = ["success" => 'success', "message" => "Se ha enviado un enlace de recuperación a tu correo"];
             }else{
                 $resultado = ["success" => 'error', "message" => "Error al procesar la solicitud"];
